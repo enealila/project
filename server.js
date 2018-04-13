@@ -1,25 +1,54 @@
 const express = require('express');
+const expressValidator = require('express-validator');
+const session = require('express-session');
 const fileUpload = require('express-fileupload');
-const {ObjectID} = require('mongodb');
-const _ = require('lodash');
-const bcrypt = require('bcryptjs');
+const cookeParser = require('cookie-parser');
+const bodyParser = require('body-parser');
+const ejs = require('ejs');
+const flash = require('connect-flash');
+const path = require('path');
+const passport = require('passport');
+const LocalStrategy = require('passport-local').Strategy;
 var {mongoose} = require('./db/mongoose');
-var {User}= require('./models/users');
+
 var app = express();
 var port = process.env.PORT ||3000;
-var path = require('path');
 
-mongoose.connect('mongodb://localhost:27017');
+
+mongoose.connect('mongodb://localhost/passport');
 let db = mongoose.connection;
 
 db.once('open',function(){
 console.log('Connected to db');
 });
-// Set the default templating engine to ejs
+
+app.use(express.static(__dirname + '/public'));
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
- //app.set('view engine','ejs');
-// app.use(express.static(__dirname +''));
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: false}));
+app.use(cookeParser());
+app.use(session({
+  secret: 'keyboard cat',
+  resave: false,
+  saveUninitialized: true,
+ }));
+ 
+ app.use(passport.initialize());
+ app.use(passport.session());
+ 
+ app.use(expressValidator());
+ 
+ app.use(flash());
+ 
+ app.use(function(req, res, next){
+  res.locals.success_message = req.flash('success_message');
+  res.locals.error_message = req.flash('error_message');
+  res.locals.error = req.flash('error');
+  res.locals.user = req.user || null;
+  next();
+ });
 
 app.get('/', function(req,res){
 res.render('login.ejs');
@@ -32,8 +61,8 @@ res.render('login.ejs');
 app.get('/login', function(req,res){
     res.render('login.ejs');
       });
-      app.get('/signup', function(req,res){
-        res.render('signup.ejs');
+      app.get('/register', function(req,res){
+        res.render('register.ejs');
           });
       app.get('/profile', function(req,res){
         res.render('profile.ejs');
@@ -46,48 +75,6 @@ app.get('/about', function(req,res){
             console.log('aaa');
                });
 
-app.post('/users',(req,res)=>{
-  var name = _.pick(req.body,['name']); 
-  var email = _.pick(req.body,['email']); 
-  var username = _.pick(req.body,['username']); 
-  var password = _.pick(req.body,['password1']); 
-  var password2 = _.pick(req.body,['password2']); 
-  
-  req.checkBody('name','Name is required').notEmpty();
-  req.checkBody('email','Email is required').notEmpty();
-  req.checkBody('email','Email is not required').isMail();
-  req.checkBody('username','Name is required').notEmpty();
-  req.checkBody('password','Name is required').notEmpty();
-  req.checkBody('password2','Name is required').equals(req.body.password);
-if(errors){
-  res.render('/users',{
-    errors:errors
-  });
-}
-  var newUser =  new User({
-    name:name,
-    email:email,
-    username:username,
-    password:password
-  });
-  bcrypt.genSalt(10,function(){
-  bcrypt.hash(newUser.password,salt,function(err,hash){
-  if(error){
-    console.log(err);
-  }
-  newUser.password =hash;
-  newUser.save(function(err){
-    if(error){
-      console.log(err);
-    }else{
-      // console.log('success');
-      req.flash('success');
-      res.redirect('./../views/login');
-    }
-  });
-  });
-   });
-          });
                
 app.listen(port,function(){
     console.log(`Server is on port ${port}`);
