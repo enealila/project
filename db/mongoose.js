@@ -1,5 +1,5 @@
 var mongoose = require('mongoose');
 
 mongoose.Promise=global.Promise;
-mongoose.connect('mongodb://localhost:27017/passport');
+mongoose.connect('mongodb://localhost:27017/project');
 module.exports={mongoose};

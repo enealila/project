@@ -3,21 +3,23 @@ import express from 'express';
 import { User, createUser, comparePassword, getUserByEmail, getUserById } from '../models/User';
 import passport from 'passport';
 
-let LocalStrategy = require('passport-local').Strategy;
-let router =  express.Router();
+var LocalStrategy = require('passport-local').Strategy;
+var router =  express.Router();
 
-router.get('/', function(req, res){
-    res.render('views/users');
+var User = require('../models/user');
+
+router.get('/login', function(req, res){
+    res.render('login');
 });
 router.get('/register', function(req, res){
-  	res.render('views/register');
+  	res.render('register');
 });
 router.post('/register', function(req, res){
-  	let name = req.body.name;
-    let email = req.body.email;
-    let username = req.body.username;            
-    let password = req.body.password;
-    let password2 = req.body.password2;
+  	var name = req.body.name; 
+    var email = req.body.email;
+    var username = req.body.username;            
+    var password = req.body.password;
+    var password2 = req.body.password2;
     req.checkBody('name', 'Name is required').notEmpty();
     req.checkBody('email', 'Email is required').notEmpty();
     req.checkBody('email', 'Please enter a valid email').isEmail();
@@ -25,25 +27,25 @@ router.post('/register', function(req, res){
     req.checkBody('password2', 'Confirm Password is required').notEmpty();
     req.checkBody('password2', 'Confirm Password Must Matches With Password').equals(password);
 
-    let errors = req.validationErrors();
+    var errors = req.validationErrors();
     if(errors)
     {
-        res.render('views/register',{errors: errors});
+        res.render('register',{errors: errors});
     }
     else
     {
-        let user = new User({
+        var newUser = new User({
         name: name,
         email: email,
         username:username,
         password: password
         });
-        createUser(user, function(err, user){
+        User.createUser(newUser, function(err, user){
             if(err) throw err;
             else console.log(user);
         });
         req.flash('success_message','You have registered, Now please login');
-        res.redirect('login');
+        res.redirect('/users/login');
     }
 });
 
