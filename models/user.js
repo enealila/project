@@ -1,8 +1,6 @@
- const mongoose= require('mongoose');
- const bcrypt = require('bcryptjs');
+ var mongoose= require('mongoose');
+ var bcrypt = require('bcryptjs');
 
-
-const validator = require('validator');
 var UserSchema =  new mongoose.Schema({
 name:{
     type:String,
@@ -15,11 +13,7 @@ name:{
 		required: true,
 		trim: true,
 		minLength:5,
-		unique: true,
-		validate: {
-			validator: validator.isEmail,
-			message:'{VALUE} is not a valid email'
-		}
+		unique: true
 	},
 	username:{
 		type:String,
@@ -31,6 +25,35 @@ name:{
 		minlength:6
 	}
 });
-var User = mongoose.model('User',UserSchema);
+var User = module.exports= mongoose.model('User',UserSchema);
 
- module.exports = {User};
+module.exports.createUser = function(newUser,callback) {
+bcrypt.genSalt(10, function(err, salt) {
+    bcrypt.hash(newUser.password, salt, function(err, hash) {
+      console.log(newUser.password); 
+      newUser.password = hash;
+      console.log(newUser.password); 
+        newUser.save(callback);
+    });
+});}
+
+
+module.exports.getUserByUsername = function(username,callback){
+    var query = {username: username};
+    console.log(query);
+    User.findOne(query,callback);
+}
+
+module.exports.getUserById = function(id,callback){
+    User.findById(id,callback);
+}
+
+module.exports.comparePassword = function(candidatePassword,hash,callback){
+    bcrypt.compare(candidatePassword, hash, function(err,isMatch){
+      console.log(candidatePassword);
+    if(err) throw err;
+    callback(null, isMatch);
+    console.log(isMatch);
+    });
+}
+

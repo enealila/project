@@ -1,4 +1,4 @@
-</header>
+<header>
         <nav class="navbar navbar-default" role="navigation">
             <div class="container-fluid">
             
@@ -12,26 +12,11 @@
                         <li><a href="/home">Home</a></li>
                         <li><a href="/profile">Profile</a></li>
                         <li><a href="/about">About</a></li>
-                        <li><a href="/users/login">Log in</a></li>
-                        <li><a href="/users/logout">Log out</a></li>
+                        <li><a href="/logout">Log out</a></li>
                     </ul>
                 </div>
             
             </div>
             </nav>
-        </header>
-        <%if (success_message != '') { %>
-            <div class="alert alert-success">
-               <%= success_message %>
-            </div>
-           <% } %>
-           <%if (error_message != '') { %>
-             <div class="alert alert-danger">
-               <%= error_message %>
-             </div>
-           <% } %>
-           <%if (error != '') { %>
-            <div class="alert alert-danger">
-               <%= error %>
-            </div>
-           <% } %>
+          
+           </header>
