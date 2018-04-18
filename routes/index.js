@@ -4,13 +4,11 @@ var passport = require('passport');
 var bcrypt = require('bcryptjs');
 var LocalStrategy = require('passport-local').Strategy;
 var auth = require('../core/middleware/auth');
-// var upload = require('../core/middleware/upload');
 var User = require('../models/user');
+var Image = require('../models/images');
 var path =require('path');
-// var formidable = require('formidable'),
-//  http = require('http'),
-//  util = require('util'),
-//  fs   = require('fs-extra');
+const multer =  require('multer');
+
 
 router.get('/',  function(req, res){
     res.render('login');
@@ -23,6 +21,7 @@ router.get('/register', auth.is.NOT_LOGGED ,function(req, res){
 });
 router.get('/home', auth.is.LOGGED , function(req, res){
         res.render('home');
+        
 });
 router.get('/profile', auth.is.LOGGED , function(req, res){
     res.render('profile');
@@ -117,9 +116,11 @@ router.get('/logout', function(req, res){
     req.flash('success_message', 'You are logged out');
     res.redirect('/login');
 });
+router.get('/upload', function(req, res){
+    res.redirect('/profile');
+});
 
-const multer =  require('multer');
-
+//init upload
 const storage = multer.diskStorage({
     destination:'./public/uploads',
     filename: function(req,file,callback){
@@ -127,68 +128,44 @@ const storage = multer.diskStorage({
     }
 });
 
-//init upload
-
-const upload = multer({
-    storage:storage
-}).single('myphoto');
-
+const upload = multer({storage:storage}).array('myphoto',3);
+// , upload.array('myphoto',3)
 router.post('/upload',function(req,res){
 	upload(req,res,function(err){
+        var array = req.files;
+            for(var i=0;i<3;i++){
+        var fieldname = array[i].fieldname;
+        var originalname = array[i].originalname;
+        var encoding = array[i].encoding;
+        var mimetype = array[i].mimetype;
+        var destination = array[i].destination;
+        var filename = array[i].filename;
+        var path = array[i].path;
+        var size = array[i].size;
 		if(err){
 			res.render('profile',{
 				msg:err
 			});
 		}else{
-			console.log(req.file);
-			res.send('test');
-		}
-	});
-
-	});
-
-
-
-
-
-
-
-// router.post('upload',function(req,res,next){
-// 	var formidable = require('formidable');
-// 	var form = new formidable.IncomingForm();
-// 	form.uploadDir='../public/uploads';
-// 	form.keepExtensions=true;
-// 	form.maxFieldsSize=10*1024*1024;
-// 	form.multiples=true;
-// 	form.parse(request,function(err,fields,file){
-// 		if(err){
-// 			response.json({
-// 				result:"failed",
-// 				data:{},
-// 				message:`Cannor upload ${err}`
-// 			})
-// 		}
-// 		var arrayOfFiles = files[""];
-// 		if(arrayOfFiles.length>0){
-// 			var fileNames = [];
-// 			arrayOfFiles.forEach(function(eachFile){
-// 				fileNames.push(eachFile.path)
-// 			});
-// 			response.json({
-// 				result:"ok",
-// 				data:fileNames,
-// 				numberOfImages:filenames.length,
-// 				message:"Upload successfully"
-// 			});
-// 		}
-// 			else{
-// 				response.json({
-// 					result:"failed",
-// 					data:{},
-// 					message:`no foto tu upload `
-// 			});
-// 		}
-	
-// });});
+            var newImage = new Image({
+                 fieldname :fieldname,
+                 originalname :originalname,
+                 encoding :encoding,
+                 mimetype :mimetype,
+                 destination :destination,
+                 filename :filename,
+                 path :path,
+                 size :size
+            })
+            Image.saveImage(newImage, function(err,image){
+             if(err) throw err;
+             console.log(image);
+		});
+        }
+        
+    }
+    res.redirect('home');
+});
+ });
 
 module.exports=router;

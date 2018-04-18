@@ -72,10 +72,7 @@ app.use(function(req,res,next){
 next();
 });
 
-
-
 app.use('/',routes);
-
 
 //set port
 app.set('port',(process.env.PORT || 3000));

@@ -11,9 +11,7 @@
     action='/upload' 
     method='post' 
     encType="multipart/form-data">
-      <input type="file" name="myphoto" />
-      <input type="file" name="myphoto1" />
-      <input type="file" name="myphoto2" />
+      <input type="file" name="myphoto" multiple/>
       <input type='submit' value='Upload!' />
   </form>    
   <footer><%- include partials/footer %></footer>
