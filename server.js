@@ -11,9 +11,12 @@ var mongo = require('mongodb');
 var mongoose = require('mongoose');
 var fileUpload = require('express-fileupload');
 var multer = require('multer');
+
 mongoose.connect('mongodb://localhost:27017/project');
 var db = mongoose.connection;
 
+
+var Image = require('./models/images');
 var routes = require('./routes/index');
 
 //init app 
@@ -74,6 +77,8 @@ next();
 
 app.use('/',routes);
 
+
+module.exports = db;
 //set port
 app.set('port',(process.env.PORT || 3000));
 

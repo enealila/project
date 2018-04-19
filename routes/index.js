@@ -20,8 +20,10 @@ router.get('/register', auth.is.NOT_LOGGED ,function(req, res){
   	res.render('register');
 });
 router.get('/home', auth.is.LOGGED , function(req, res){
-        res.render('home');
-        
+    Image.find({},function(err,image){
+        res.render('home',{image:image});
+    })
+  
 });
 router.get('/profile', auth.is.LOGGED , function(req, res){
     res.render('profile');
@@ -128,12 +130,11 @@ const storage = multer.diskStorage({
     }
 });
 
-const upload = multer({storage:storage}).array('myphoto',3);
-// , upload.array('myphoto',3)
+const upload = multer({storage:storage}).array('myphoto');
 router.post('/upload',function(req,res){
 	upload(req,res,function(err){
         var array = req.files;
-            for(var i=0;i<3;i++){
+            for(var i=0;i<array.length;i++){
         var fieldname = array[i].fieldname;
         var originalname = array[i].originalname;
         var encoding = array[i].encoding;

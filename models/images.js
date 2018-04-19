@@ -49,5 +49,3 @@ module.exports.findImage = function(filename,callback){
 
 
 
-
-
