@@ -22,7 +22,7 @@ router.get('/register', auth.is.NOT_LOGGED ,function(req, res){
 router.get('/home', auth.is.LOGGED , function(req, res){
     Image.find({},function(err,image){
         res.render('home',{image:image});
-    })
+    });
   
 });
 router.get('/profile', auth.is.LOGGED , function(req, res){
@@ -134,6 +134,16 @@ const upload = multer({storage:storage}).array('myphoto');
 router.post('/upload',function(req,res){
 	upload(req,res,function(err){
         var array = req.files;
+        var radio = req.body.upload;
+        console.log(radio);
+        if(radio === 'Header'){
+            storage.destination == destination+'/header';
+        }else if(radio === 'Slide'){
+            storage.destination==destination+'/slide';
+        }else{
+            storage.destination == destination+'/video';
+        }
+        console.log(radio);
             for(var i=0;i<array.length;i++){
         var fieldname = array[i].fieldname;
         var originalname = array[i].originalname;

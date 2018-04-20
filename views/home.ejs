@@ -104,33 +104,45 @@
   </head>
   <body>
   <header> <%- include partials/header %> </header>
-      <div width="1280" height="720">
-      <table border="0">
+      <div width="1280px" height="720px">
+      <table border="1" width="1280px" height="720px" >
       <tr>
-      <td>
+      <td >
+        <div class="slideshow-container" >
+          <div class="">
+            <img width="1280px"height="85px" src="/uploads/myphoto-1524149454736.jpg">
+          </div>
+        </div>
       </td>
     </tr>
-      <tr><td width="500px" height="500px">
+     <tr>
+    <td >
+    <div class="viedo-container">
+    <div class="myVideos" >
+        
+        
+      <video style="width:500px ;height:500px" id="video" onended="video()"  controls autoplay>
+          <% for(var i = 0 ; i <image.length ; i++){%>
+        <% if(image[i].mimetype === 'video/mp4'){%>
+    <source  src="/uploads/<%= image[i].filename%>" type="video/mp4">
+  <%  } }%>
+</video>
+</div>
+</div>
+</td>
+<td >
 <div class="slideshow-container" >
-  
     <% for(var i=0;i<image.length;i++){%>
     <% if(image[i].mimetype === 'image/jpeg'){ %>
   <div class="mySlides ">
     <div class="numbertext"><%= i+1 %>/<%= image.length%></div>
-    <img src="/uploads/<%= image[i].filename%>" style="width:500px;height:500px"/>
+    <img src="/uploads/<%= image[i].filename%>" style="width:400px;height:500px"/>
     <div class="text">Image<%=i+1%> </div>
   </div>
   <% } }%>
 </div>
 </td>
-<td>
-    <% for(var i=0;i<image.length;i++){%>
-      <% if(image[i].mimetype === 'video/mp4'){%>
-    <video width="320" height="240" controls >
-        <source src="/uploads/<%= image[i].filename%>" type="video/mp4">
-      </video>
-      <% } }%>
-</td>
+
 </tr>
 <tr>
 <td>
@@ -153,6 +165,12 @@ function carousel() {
   x[slideIndex-1].style.display = "block"; 
   setTimeout(carousel, 2000); // Change image every 2 seconds
 }
+
+function video(){
+  alert("The video has ended");
+  }
+
+
   </script>
     <footer><%- include partials/footer%></footer> 
   </body>
